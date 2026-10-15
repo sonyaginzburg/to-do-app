@@ -1,53 +1,20 @@
-import { randomBytes } from 'node:crypto'
 import request from 'supertest'
 import { afterAll, describe, expect, it } from 'vitest'
-import { createApp } from './app.js'
 import { prisma } from './db.js'
 import { redis } from './redis.js'
 import { sessionKey } from './sessions.js'
+import {
+  PASSWORD,
+  api,
+  app,
+  cleanup,
+  emailFor,
+  randomIp as ipFor,
+  registerUser,
+  sessionCookie,
+} from './testing/helpers.js'
 
-const app = createApp()
-const ORIGIN = 'http://localhost:8080'
-const PASSWORD = 'correct horse'
-
-let counter = 0
-const unique = () => `${Date.now()}-${counter++}`
-const emailFor = () => `auth-test-${unique()}@test.com`
-// Every test uses its own random client IP so the per-IP rate limit (kept in Redis for 60s)
-// never leaks between tests or between test runs.
-const ipFor = () => Array.from(randomBytes(4), (b) => b).join('.')
-
-function api(ip = ipFor()) {
-  const post = (url: string, body?: object, cookie?: string, origin = ORIGIN) => {
-    const req = request(app).post(url).set('X-Forwarded-For', ip).set('Origin', origin)
-    if (cookie) req.set('Cookie', cookie)
-    return req.send(body)
-  }
-  const get = (url: string, cookie?: string) => {
-    const req = request(app).get(url).set('X-Forwarded-For', ip)
-    if (cookie) req.set('Cookie', cookie)
-    return req
-  }
-  return { post, get }
-}
-
-const sessionCookie = (res: request.Response) =>
-  (res.headers['set-cookie'] as unknown as string[] | undefined)
-    ?.find((c) => c.startsWith('sid='))
-    ?.split(';')[0]
-
-async function registerUser(client = api()) {
-  const email = emailFor()
-  const res = await client.post('/api/auth/register', { email, password: PASSWORD })
-  return { email, res, cookie: sessionCookie(res)!, client }
-}
-
-afterAll(async () => {
-  await prisma.user.deleteMany({ where: { email: { startsWith: 'auth-test-' } } })
-  await prisma.$disconnect()
-  redis.disconnect()
-})
-
+afterAll(cleanup)
 describe('US1 Register', () => {
   it('AC1.1 creates the account, logs me in and returns the user', async () => {
     const { email, res, cookie, client } = await registerUser()
