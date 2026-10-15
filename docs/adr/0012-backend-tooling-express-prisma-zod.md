@@ -9,13 +9,14 @@ Three related decisions on how the Node/TypeScript API (ADR 0001) is built. Pris
 - **Problem:** Node alone gives low-level HTTP; we need routing, middleware (session check, CSRF/Origin check, rate limiting), and error handling.
 - **Pros:** Most widely used Node framework; huge middleware ecosystem (cookies, rate limiting); simple to explain; very reliable Copilot output.
 - **Cons:** Not designed for TypeScript; no built-in validation (solved by Zod); less structure, so we impose our own folder conventions.
-- **Rejected:** *Fastify* (faster and has built-in schemas, but speed is irrelevant when the database is the bottleneck, and its ecosystem is smaller). *NestJS* (enforced structure, but heavy boilerplate and a steep learning curve for a one-week project).
+- **Rejected:** _Fastify_ (faster and has built-in schemas, but speed is irrelevant when the database is the bottleneck, and its ecosystem is smaller). _NestJS_ (enforced structure, but heavy boilerplate and a steep learning curve for a one-week project).
 
 ## B. Database access: Prisma ORM
 
 - **Problem:** The API receives requests as JSON, but PostgreSQL understands SQL. Something must translate safely and correctly. We also need versioned schema changes (migrations).
 
 ### Why Prisma (detailed justification)
+
 1. **One source of truth.** The `schema.prisma` file defines tables, relations, enums, and indexes. Prisma generates both the migration SQL and the TypeScript types from it, so the database and the code cannot drift apart.
 2. **Type safety catches mistakes before runtime.** A misspelled column (`priorty`) or a wrong value (`priority: "banana"`) is flagged in the editor. With raw SQL these show up only at runtime. This matters because Copilot writes most of the code; the compiler checks its work.
 3. **Our data model maps cleanly.** Todos <-> tags is many-to-many (`todo_tags`). Prisma models it as a relation, and `include: { tags: true }` fetches todos with their tags in one round of queries, avoiding the N+1 problem (1 query for 20 todos plus 20 for their tags).
@@ -27,6 +28,7 @@ Three related decisions on how the Node/TypeScript API (ADR 0001) is built. Pris
 9. **Escape hatch.** `prisma.$queryRaw` allows raw parameterized SQL for any query Prisma handles awkwardly.
 
 ### Cons / tradeoffs (acknowledged)
+
 - Hides SQL, so we learn less raw SQL. Mitigation: enable query logging and review the generated SQL for the list endpoint with `EXPLAIN`.
 - Some advanced features (partial or expression indexes, certain filters) need raw SQL migrations.
 - Adds a generated client and a build step (`prisma generate`).
@@ -34,11 +36,12 @@ Three related decisions on how the Node/TypeScript API (ADR 0001) is built. Pris
 - Risk of N+1 queries if relations are loaded carelessly (mitigated with `include` and tests on query count).
 
 ### Alternatives considered
-| Alternative | Why rejected |
-|---|---|
-| Raw SQL with `pg` | Maximum control and SQL learning value, but no type checking, more code for Copilot to get wrong, and migrations need a separate tool. |
-| Kysely (typed query builder) | Typed and close to SQL, but smaller community, and migrations and schema types are managed separately. |
-| Drizzle ORM | Good and lightweight, but newer with fewer examples; Prisma's tooling and documentation are more mature for a first project. |
+
+| Alternative                  | Why rejected                                                                                                                           |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Raw SQL with `pg`            | Maximum control and SQL learning value, but no type checking, more code for Copilot to get wrong, and migrations need a separate tool. |
+| Kysely (typed query builder) | Typed and close to SQL, but smaller community, and migrations and schema types are managed separately.                                 |
+| Drizzle ORM                  | Good and lightweight, but newer with fewer examples; Prisma's tooling and documentation are more mature for a first project.           |
 
 ## C. Input validation: Zod
 
@@ -46,7 +49,8 @@ Three related decisions on how the Node/TypeScript API (ADR 0001) is built. Pris
 - **Decision:** One Zod schema per request body/query. Failures produce the standard `400` with a `fields` map.
 - **Pros:** Rules live in one readable place; TypeScript types are inferred; schemas can be shared with the React frontend; consistent error format.
 - **Cons:** One more dependency; developers must remember to apply it on every route (enforced with tests for each 400 criterion).
-- **Rejected:** *express-validator* (Express-specific, weaker typing, cannot be shared with the frontend). *Hand-written checks* (repetitive, inconsistent, easy to forget a case).
+- **Rejected:** _express-validator_ (Express-specific, weaker typing, cannot be shared with the frontend). _Hand-written checks_ (repetitive, inconsistent, easy to forget a case).
 
 ## Consequences
+
 Each spec rule (title 1-200, tag 1-30, max 10 tags, password >= 8, valid priority/sort/limit) is a Zod schema line. The data model is defined in `schema.prisma`, and all schema changes go through migrations.

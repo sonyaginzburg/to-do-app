@@ -1,0 +1,27 @@
+{
+  "name": "to-do-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "workspaces": [
+    "backend",
+    "frontend",
+    "e2e"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "npm run typecheck -w backend && npm run typecheck -w frontend",
+    "test": "npm run test -w backend && npm run test -w frontend",
+    "build": "npm run build -w backend && npm run build -w frontend"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.12.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10",
+    "typescript-eslint": "^8.71.2"
+  }
+}
