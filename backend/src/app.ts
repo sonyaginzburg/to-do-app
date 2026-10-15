@@ -1,7 +1,8 @@
 import express from 'express'
 import { authRouter } from './authRoutes.js'
 import { errorHandler, notFoundHandler } from './errors.js'
-import { originCheck } from './middleware.js'
+import { originCheck, requireAuth } from './middleware.js'
+import { tagsRouter } from './tagsRoutes.js'
 
 export function createApp() {
   const app = express()
@@ -17,6 +18,7 @@ export function createApp() {
   const api = express.Router()
   api.use(originCheck)
   api.use('/auth', authRouter)
+  api.use('/tags', requireAuth, tagsRouter)
   app.use('/api', api)
 
   app.use(notFoundHandler)
