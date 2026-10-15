@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Priority {
+  low
+  medium
+  high
+}
+
+model User {
+  id           String   @id @default(uuid(7)) @db.Uuid
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  todos        Todo[]
+  tags         Tag[]
+
+  @@map("users")
+}
+
+model Todo {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  title     String
+  completed Boolean   @default(false)
+  priority  Priority  @default(medium)
+  dueDate   DateTime? @map("due_date") @db.Date
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tags      TodoTag[]
+
+  @@index([userId, dueDate])
+  @@index([userId, priority])
+  @@index([userId, completed])
+  @@map("todos")
+}
+
+model Tag {
+  id     String    @id @default(uuid(7)) @db.Uuid
+  userId String    @map("user_id") @db.Uuid
+  name   String
+  user   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  todos  TodoTag[]
+
+  @@map("tags")
+}
+
+model TodoTag {
+  todoId String @map("todo_id") @db.Uuid
+  tagId  String @map("tag_id") @db.Uuid
+  todo   Todo   @relation(fields: [todoId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([todoId, tagId])
+  @@index([tagId])
+  @@map("todo_tags")
+}
