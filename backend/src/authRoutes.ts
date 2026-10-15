@@ -3,9 +3,10 @@ import { Router } from 'express'
 import { z } from 'zod'
 import { clearSessionCookie, setSessionCookie } from './cookies.js'
 import { prisma } from './db.js'
-import { conflict, invalidCredentials, notFound, validationError } from './errors.js'
+import { conflict, invalidCredentials, notFound } from './errors.js'
 import { authRateLimit, requireAuth } from './middleware.js'
 import { createSession, deleteSession } from './sessions.js'
+import { parseBody } from './validation.js'
 
 const emailSchema = z
   .string({ error: 'Required' })
@@ -25,17 +26,6 @@ const loginSchema = z.object({
   email: emailSchema,
   password: z.string({ error: 'Required' }).min(1, 'Required'),
 })
-
-export function parseBody<T extends z.ZodType>(schema: T, body: unknown): z.infer<T> {
-  const result = schema.safeParse(body ?? {})
-  if (result.success) return result.data
-  const fields: Record<string, string> = {}
-  for (const issue of result.error.issues) {
-    const name = String(issue.path[0] ?? 'body')
-    fields[name] ??= issue.message
-  }
-  throw validationError(fields)
-}
 
 // Verified when the email is unknown, so wrong-email and wrong-password take similar time.
 const dummyHash = argon2.hash('not-a-real-password')
