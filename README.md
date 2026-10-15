@@ -22,6 +22,7 @@ A weekly planner to-do app designed to scale to 100k users.
 ```
 npm install
 docker run -d --name todo-pg-dev -e POSTGRES_USER=todo -e POSTGRES_PASSWORD=todo -e POSTGRES_DB=todo -p 5433:5432 postgres:17
+docker run -d --name todo-redis-dev -p 6380:6379 redis:7
 echo DATABASE_URL=postgresql://todo:todo@localhost:5433/todo > backend/.env
 npm run db:migrate -w backend
 npm run lint
