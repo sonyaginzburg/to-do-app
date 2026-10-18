@@ -188,7 +188,7 @@ As a user, I want to add a todo with an optional due date, priority, and tags so
 
 As a user, I want to see my todos laid out by day so that I can see what I plan to do and when.
 
-- AC4.1 Given today is Thu Oct 15, 2026 and I have todos due on each day of Mon Oct 12 to Sun Oct 18, when I open the board, then each todo appears in its day's column and Thursday's column is highlighted as today.
+- AC4.1 Given today is Thu Oct 15, 2026 and I have todos due on each day of Mon Oct 12 to Sun Oct 18 (those before today being completed, since unfinished ones show in Overdue, see US13), when I open the board, then each todo appears in its day's column and Thursday's column is highlighted as today.
 - AC4.2 Given two users each have todos, when I load my board, then I only see my own.
 - AC4.3 Given a todo with no due date, when I open the board, then it appears in Unscheduled.
 - AC4.4 Given I have 25 incomplete overdue todos, when I request `overdueBefore` with limit 20, then I get 20 items with total 25, and offset 20 returns the remaining 5.
