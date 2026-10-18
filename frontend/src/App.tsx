@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import AuthPage from './AuthPage'
-import HomePage from './HomePage'
+import BoardPage from './BoardPage'
 import { RedirectIfAuthed, RequireAuth } from './guards'
 
 export default function App() {
@@ -16,7 +16,7 @@ export default function App() {
           <Route path="/register" element={<AuthPage mode="register" />} />
         </Route>
         <Route element={<RequireAuth />}>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<BoardPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

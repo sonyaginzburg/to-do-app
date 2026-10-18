@@ -1,0 +1,33 @@
+.form {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.form input {
+  font: inherit;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px dashed #8a8472;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text);
+}
+
+.form input[aria-invalid='true'] {
+  border: 2px solid var(--danger);
+}
+
+.error {
+  margin: 0;
+  color: var(--danger);
+  font-size: 0.85rem;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
