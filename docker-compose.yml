@@ -1,0 +1,83 @@
+name: todo-app
+
+# Only nginx publishes a port (8080). Everything else is reachable inside the Compose network only.
+# Defaults below are for local use; override them in a .env file (never committed).
+x-api-env: &api-env
+  NODE_ENV: ${NODE_ENV:-production}
+  PORT: 3000
+  DATABASE_URL: postgresql://todo:${POSTGRES_PASSWORD:-todo}@postgres:5432/todo
+  REDIS_URL: redis://redis:6379
+  ALLOWED_ORIGIN: ${ALLOWED_ORIGIN:-http://localhost:8080}
+  COOKIE_SECURE: ${COOKIE_SECURE:-false}
+
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: todo
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-todo}
+      POSTGRES_DB: todo
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U todo -d todo']
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  # One-off step: applies database migrations, then exits.
+  migrate:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    command: ['npm', 'run', 'db:deploy', '-w', 'backend']
+    environment: *api-env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: 'no'
+
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment: *api-env
+    deploy:
+      replicas: 2
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://localhost:3000/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    ports:
+      - '8080:80'
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  pgdata:

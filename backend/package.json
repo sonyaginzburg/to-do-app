@@ -11,7 +11,8 @@
     "test": "vitest run",
     "postinstall": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "db:deploy": "prisma migrate deploy"
+    "db:deploy": "prisma migrate deploy",
+    "seed": "tsx src/seed.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.0",

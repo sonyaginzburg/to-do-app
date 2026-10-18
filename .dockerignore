@@ -1,0 +1,15 @@
+node_modules
+**/node_modules
+**/dist
+**/coverage
+.git
+.github
+.env
+.env.*
+!.env.example
+docs
+e2e/*
+**/playwright-report
+**/test-results
+*.log
+!e2e/package.json
