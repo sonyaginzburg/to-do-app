@@ -5,7 +5,7 @@ name: todo-app
 x-api-env: &api-env
   NODE_ENV: ${NODE_ENV:-production}
   PORT: 3000
-  DATABASE_URL: postgresql://todo:${POSTGRES_PASSWORD:-todo}@postgres:5432/todo
+  DATABASE_URL: postgresql://todo:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env (see .env.example)}@postgres:5432/todo
   REDIS_URL: redis://redis:6379
   ALLOWED_ORIGIN: ${ALLOWED_ORIGIN:-http://localhost:8080}
   COOKIE_SECURE: ${COOKIE_SECURE:-false}
@@ -16,7 +16,7 @@ services:
     image: postgres:17
     environment:
       POSTGRES_USER: todo
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-todo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env (see .env.example)}
       POSTGRES_DB: todo
     volumes:
       - pgdata:/var/lib/postgresql/data
