@@ -99,6 +99,25 @@ export function useUpdateTodo() {
   })
 }
 
+export function useDeleteTodo() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => api('DELETE', `/todos/${id}`),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['todos'] }),
+  })
+}
+
+// Same ordering the server uses, so a card that was moved by hand lands in the right spot.
+export function compareTodos(a: Todo, b: Todo) {
+  const rank = { high: 0, medium: 1, low: 2 }
+  return (
+    Number(a.completed) - Number(b.completed) ||
+    rank[a.priority] - rank[b.priority] ||
+    a.createdAt.localeCompare(b.createdAt) ||
+    a.id.localeCompare(b.id)
+  )
+}
+
 export function useTagMutations() {
   const queryClient = useQueryClient()
   // A renamed or deleted tag also changes the todos that show it.

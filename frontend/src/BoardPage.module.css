@@ -95,3 +95,62 @@
   border-radius: var(--radius);
   background: var(--surface);
 }
+
+.tabs {
+  display: flex;
+  gap: var(--space-1);
+  overflow-x: auto;
+  margin-bottom: var(--space-2);
+}
+
+.tabs button {
+  font: inherit;
+  padding: 8px 12px;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  flex: none;
+}
+
+.tabs .activeTab {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.single {
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.toasts {
+  position: fixed;
+  left: var(--space-3);
+  bottom: var(--space-3);
+  display: grid;
+  gap: var(--space-2);
+  z-index: 50;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: #2b2a26;
+  color: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.toast button {
+  font: inherit;
+  font-weight: 700;
+  border: 0;
+  background: transparent;
+  color: #9fd8d2;
+  text-decoration: underline;
+  cursor: pointer;
+}

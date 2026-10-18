@@ -31,6 +31,7 @@ export function installFakeApi(seed: { todos?: Seed[]; tags?: Tag[] } = {}) {
   }
   const todos: Todo[] = (seed.todos ?? []).map(make)
   const requests: { method: string; url: string; body?: Record<string, unknown> }[] = []
+  let failNextPatch = false
 
   const reply = (status: number, body?: unknown) =>
     new Response(body === undefined ? null : JSON.stringify(body), { status })
@@ -112,7 +113,17 @@ export function installFakeApi(seed: { todos?: Seed[]; tags?: Tag[] } = {}) {
       todos.push(todo)
       return reply(201, todo)
     }
+    if (route.startsWith('/todos/') && method === 'DELETE') {
+      const index = todos.findIndex((t) => t.id === id)
+      if (index < 0) return fail(404, 'Todo not found')
+      todos.splice(index, 1)
+      return reply(204)
+    }
     if (route.startsWith('/todos/') && method === 'PATCH') {
+      if (failNextPatch) {
+        failNextPatch = false
+        return fail(500, 'Something broke')
+      }
       const todo = todos.find((t) => t.id === id)!
       const { tagIds, ...rest } = body ?? {}
       Object.assign(todo, rest)
@@ -135,5 +146,12 @@ export function installFakeApi(seed: { todos?: Seed[]; tags?: Tag[] } = {}) {
     }),
   )
 
-  return { todos, tags, requests }
+  return {
+    todos,
+    tags,
+    requests,
+    failNextPatch: () => {
+      failNextPatch = true
+    },
+  }
 }

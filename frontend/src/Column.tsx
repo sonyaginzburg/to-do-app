@@ -1,6 +1,7 @@
+import { useDroppable } from '@dnd-kit/core'
 import type { ReactNode } from 'react'
 import QuickAdd from './QuickAdd'
-import TodoCard from './TodoCard'
+import TodoCard, { type MoveOption } from './TodoCard'
 import type { Todo } from './todos'
 import styles from './Column.module.css'
 
@@ -15,7 +16,13 @@ type Props = {
   quickAdd?: { label: string; dueDate?: string }
   footer?: ReactNode
   loading?: boolean
+  // Id other code uses to know where a card was dropped
+  dropId: string
+  draggable?: boolean
+  moveOptions: MoveOption[]
+  onMove: (todo: Todo, value: string) => void
   onEdit: (todo: Todo) => void
+  onDelete: (todo: Todo) => void
 }
 
 export default function Column({
@@ -28,11 +35,19 @@ export default function Column({
   quickAdd,
   footer,
   loading = false,
+  dropId,
+  draggable = false,
+  moveOptions,
+  onMove,
   onEdit,
+  onDelete,
 }: Props) {
+  const { setNodeRef, isOver } = useDroppable({ id: dropId, disabled: !draggable })
+
   return (
     <section
-      className={`${styles.column} ${isToday ? styles.today : ''}`}
+      ref={setNodeRef}
+      className={`${styles.column} ${isToday ? styles.today : ''} ${isOver ? styles.over : ''}`}
       aria-label={subtitle ? `${title} ${subtitle}` : title}
       aria-current={isToday ? 'date' : undefined}
     >
@@ -49,7 +64,16 @@ export default function Column({
       ) : (
         <ul className={styles.list}>
           {todos.map((todo) => (
-            <TodoCard key={todo.id} todo={todo} overdue={overdue} onEdit={onEdit} />
+            <TodoCard
+              key={todo.id}
+              todo={todo}
+              overdue={overdue}
+              draggable={draggable}
+              moveOptions={moveOptions}
+              onMove={onMove}
+              onEdit={onEdit}
+              onDelete={onDelete}
+            />
           ))}
         </ul>
       )}
