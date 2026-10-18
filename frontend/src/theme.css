@@ -1,0 +1,71 @@
+@import '@fontsource/caveat/400.css';
+@import '@fontsource/caveat/700.css';
+
+/* The whole paper-planner theme lives here (spec 1c). Change a value once, it changes everywhere. */
+:root {
+  --bg: #fbf7ee;
+  --surface: #fffdf8;
+  --text: #2b2b2b;
+  --text-muted: #5c5c5c;
+  --accent: #1f7a74;
+  --accent-contrast: #ffffff;
+  --rule: #d9d2c0;
+  --danger: #b0301f;
+  --priority-high: #c0392b;
+  --priority-medium: #b7791f;
+  --priority-low: #2f855a;
+
+  --font-body: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-hand: 'Caveat', 'Segoe Print', cursive;
+
+  --radius: 10px;
+  --shadow: 0 1px 2px rgba(60, 45, 20, 0.12), 0 4px 10px rgba(60, 45, 20, 0.08);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 40px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+h1,
+h2 {
+  font-family: var(--font-hand);
+  font-weight: 700;
+  line-height: 1.1;
+  margin: 0;
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
