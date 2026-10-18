@@ -106,3 +106,30 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+.draggable {
+  cursor: grab;
+  touch-action: manipulation;
+}
+
+.dragging {
+  z-index: 10;
+  cursor: grabbing;
+  rotate: 2deg;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
+}
+
+.actions select {
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 2px 4px;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--accent);
+}
+
+.actions .delete {
+  border-color: var(--danger);
+  color: var(--danger);
+}

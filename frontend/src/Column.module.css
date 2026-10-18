@@ -53,3 +53,8 @@
   color: var(--text-muted);
   font-size: 0.9rem;
 }
+
+.over {
+  outline: 2px dashed var(--accent);
+  outline-offset: -4px;
+}
