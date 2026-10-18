@@ -1,0 +1,97 @@
+.page {
+  padding: var(--space-3);
+}
+
+.top {
+  display: grid;
+  gap: var(--space-2);
+  border-bottom: 2px solid var(--rule);
+  padding-bottom: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.titleRow,
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
+}
+
+.title {
+  font-size: 2.75rem;
+  color: var(--accent);
+}
+
+.account {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.weekNav,
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.range {
+  font-weight: 600;
+  margin-left: var(--space-2);
+}
+
+.account button,
+.weekNav button,
+.actions button,
+.banner button,
+.more {
+  font: inherit;
+  padding: 7px 14px;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--accent);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.actions .primary {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.banner {
+  margin-bottom: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.banner button {
+  padding: 2px 10px;
+}
+
+.hint {
+  color: var(--text-muted);
+  margin: 0 0 var(--space-3);
+}
+
+.more {
+  align-self: flex-start;
+  padding: 4px 10px;
+  font-size: 0.9rem;
+}
+
+/* Nine columns side by side; the page scrolls sideways if the window is narrower. */
+.board {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(220px, 1fr));
+  overflow-x: auto;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
