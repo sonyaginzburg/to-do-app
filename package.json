@@ -18,7 +18,8 @@
     "seed": "npm run seed -w backend",
     "e2e:up": "docker compose -p todo-e2e --env-file e2e/e2e.env up -d --build --wait",
     "e2e:down": "docker compose -p todo-e2e down -v",
-    "test:e2e": "npm run e2e:up && npm run test -w e2e && npm run e2e:down"
+    "test:e2e": "npm run e2e:up && npm run test -w e2e && npm run e2e:down",
+    "test:all": "npm test && npm run test:e2e"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
